@@ -7,6 +7,7 @@ from clients.models import Client
 from django.core import serializers
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.utils.html import escape
 
 
 # AJAX RESPONSE MIXIN WHICH I DON'T KNOW WHAT IT DOES
@@ -179,20 +180,26 @@ def QuestionQueryset(request):
 
 @login_required
 def AllQuestions(request):
-	"""
-	This function returns all questions in a JSON Query if the user is a Livecrowd user.
-	If the user is not a livecrowd user then it returns all questions of their group (Client model)
-	When you click on ALLES or ALL in the client navigation balk it GETs at /query/all
+    """
+    Returns all questions as JSON, ensuring HTML fields are safely escaped.
+    """
+    if not request.user.profile.client or request.user.profile.client == "Livecrowd":
+        query = Question.objects.filter(is_archived=False)
+    else:
+        query = Question.objects.filter(client=request.user.profile.client, is_archived=False)
 
-	:param request:
-	:return:
-	"""
-	if not request.user.profile.client or request.user.profile.client == "Livecrowd":
-		query = Question.objects.filter(is_archived=False)
-	else:
-		query = Question.objects.filter(client=request.user.profile.client, is_archived=False)
-	data = serializers.serialize("json", query, use_natural_foreign_keys=True)
-	return JsonResponse(data, status=200, safe=False)
+    # Convert query to a list of dictionaries and escape HTML fields
+    data = []
+    for question in query:
+        data.append({
+            "id": question.id,
+            "question": escape(question.question),  # Escape HTML in the question
+            "answer": escape(question.answer),  # Escape HTML in the answer
+            "category": escape(question.category) if question.category else "",
+            "event": escape(question.event.display_name) if question.event else "",
+        })
+
+    return JsonResponse(data, status=200, safe=False)
 
 
 @login_required
