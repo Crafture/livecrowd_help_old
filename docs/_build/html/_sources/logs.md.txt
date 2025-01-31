@@ -1,0 +1,46 @@
+# Logs
+
+## 26 March 2018 ##
+
+*Initial Setup:*
+
+1. Created Bitbucket repository - livecrowd-faq
+2. Created virtualenv
+```python
+mkvirtualenv livecrowd-faq
+```
+3. Upgraded pip
+```python
+pip install -U pip
+```
+4. Installed Django | Django version: Django-2.0.3
+```python
+pip install Django
+```
+5. Installed psycopg2 | required for working with postgresql ( http://initd.org/psycopg/download/ )
+```python
+pip install psycopg2
+```
+6. Added .gitignore with cheatsheet from here: ( https://gist.github.com/octocat/9257657 )
+
+---
+
+## 27 March 2018 ##
+
+1. Created a config folder in the root repository
+2. Added __init__.py in the config folder and created a settings folder insite the config folder.
+3. Added url.py inside config folder
+4. Added Sphinx Documentation ( http://www.sphinx-doc.org/en/master/ )
+```python
+pip install sphinx
+
+```
+5. Installed sphinx_rtd_theme (https://pypi.python.org/pypi/sphinx_rtd_theme)
+6. Created /docs folder
+7. Created the docs with sphinx quickstart.
+ everytime a change happens in the docs: go to the makefile (/docs) folder and do:
+ ```python
+ make html
+ ```
+  
+

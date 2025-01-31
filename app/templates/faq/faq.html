@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Home {% endblock %}
+{% block body %}
+  <body id="faq-page" ng-app="app" ng-controller="faqCtrl as faq" ng-cloak>
+    <header>
+      <div class="collapse menu" id="navbarHeader">
+        <div class="container">
+          <div class="row">
+            <div class="col-sm-12 py-4">
+              <ul class="list-inline offset-md-1">
+                <li class="list-inline-item">
+                  <a href="{% url 'logout' %}" class="text-white"><i class="material-icons">exit_to_app</i> Logout</a>
+                </li>
+                {% if user.is_superuser %}
+                <li class="list-inline-item">
+                  <a href="{% url 'admin:index' %}" class="text-white"><i class="material-icons">account_circle</i> Admin</a>
+                </li>
+                {% endif %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="primary navbar navbar-dark box-shadow">
+        <div class="container d-flex justify-content-between">
+          <a href="javascript:void(0);" class="navbar-brand d-flex align-items-center">
+            <img src="{% static 'faq/img/logo.png' %}" class="logo">
+          </a>
+          <a class="navbar-toggler" data-toggle="collapse" data-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
+            <span>Welkom {{ user }}</span>
+            <i class="material-icons">keyboard_arrow_down</i>
+          </a>
+        </div>
+      </div>
+      <!-- Client/Navigation bar/ tabbar for switching of client's questions and venues -->
+      <div id="client-nav" class="secondary navbar navbar-dark box-shadow">
+        <div class="container d-flex flex-row justify-content-start">
+          <a href="{%  url 'index' %}" data-url="{% url 'question-queryset' %}" class="text-uppercase {% if request.resolver_match.url_name == 'index' %}active{% endif %}" ng-click="faq.viewLoader();">Alles</a>
+            {% for client in client_list %}
+                <a href="{% url 'client-view' client.pk %}" data-url="{% url 'client-question-queryset' client.pk %}" class="text-uppercase {% if current_client == client.pk %}active{% endif %}" ng-click="faq.viewLoader();">{{ client }}</a>
+            {% endfor %}
+        </div>
+      </div>
+    </header>
+    <main>
+      <div class="container">
+        <div class="row">
+          <!-- VENUES -->
+          <div class="venues col-xs-12 col-md-3 col-lg-3" ng-show="faq.show">
+            <nav class="nav flex-column">
+              {% load event_extras %}
+              {% if venue_list or venue.event_set.all|not_archived %}
+              <a href="javascript:void(0);" class="nav-link selectall" ng-click="faq.selectAllVenuesAndEvents();faq.viewLoader();">
+                <i class="material-icons activated">check_box</i>
+                <i class="material-icons deactivated">check_box_outline_blank</i>
+                Selecteer alles
+              </a>
+              {% endif %}
+              {% for venue in venue_list  %}
+                {% if venue.event_set.all|not_archived %}
+                  <a href="javascript:void(0);" class="nav-link venue" data-venue="{{venue.venue}}" ng-click="faq.setNavigationActive($event);faq.toggleAllVenues($event);">
+                    <i class="material-icons activated">check_box</i>
+                    <i class="material-icons deactivated">check_box_outline_blank</i>
+                    {{venue.venue}}
+                  </a>
+                  {% for event in venue.event_set.all|not_archived %}
+                  <a href="javascript:void(0);" class="nav-link eventsOrVenues" data-url="pk={{event.pk}}" data-venue-child="{{venue.venue}}" data-event-pk="pk={{event.pk}}" data-event-info="{{event.event}}" ng-click="faq.getQuestionsAndCategories('pk={{event.pk}}');faq.setNavigationActive($event);faq.deselectVenue($event);">
+                    <i class="material-icons activated">check_box</i>
+                    <i class="material-icons deactivated">check_box_outline_blank</i>
+                    <span>{{event.event}}</span>
+                  </a>
+                  {% endfor %}
+                {% endif %}
+              {% endfor %}
+            </nav>
+          </div>
+          <!-- QUESTIONS, SEARCHBAR AND CATEGORY TABS -->
+          <div class="col-xs-12 col-md-9 col-lg-9" ng-show="faq.show">
+            <!-- CATEGORIES -->
+            <div class="col-xs-12 categories dragscroll d-none">
+              <a href="javascript:void(0);" class="text-uppercase text-white py-3 all col-xs-2" ng-click="faq.showAll($event);faq.viewLoader();">Toon alles</a>
+              <a href="javascript:void(0);" class="text-uppercase text-white py-3 category col-xs-2" ng-repeat="category in faq.categories" ng-click="faq.switchCategories(category);faq.setActiveTab($event);faq.viewLoader();" ng-bind="category"></a>
+              <span class="categories-slide-effect" style="min-width:{% verbatim %}{{faq.categories.length * 145}}{% endverbatim %}px;"></span>
+            </div>
+            <div class="row">
+              <div class="col-xs-12 col-lg-9 questions">
+                <h2 class="title">Zoek op vraag</h2>
+                <form novalidate>
+                  <!-- QUESTIONFIELD -->
+                  <div class="searchfield">
+                    <input placeholder="Zoek.." ng-model="faq.filterQuestion" type="search" name="q" value="" autocomplete="on" ng-change="faq.filterQuestionOnly();">
+                    <div class="material-icons icon">search</div>
+                  </div>
+                  <!-- LOOP OF QUESTIONS -->
+                  <div class="question" ng-if="faq.questions.length > 0" ng-repeat="question in faq.questions | filter:faq.filterQuestion | filter:faq.filterCategory | orderBy:'-fields.modified' as results track by $index">
+                    <!-- 
+                      Show Client - event/venue
+                    -->
+                    <p class="info">{% verbatim %}{{question.fields.client}}{% endverbatim %} - {% verbatim %}{{question.fields.event}}{% endverbatim %}</p>
+                    <p class="ask">{% verbatim %}{{question.fields.question}}{% endverbatim %}</p>
+                    <p class="answer" ng-bind-html="question.fields.answer"></p>
+
+                    <a href="javascript:void(0);" class="edit" ng-click="faq.editQuestion(question, $index);"><i class="material-icons">build</i> Bewerken</a>
+                    <a href="javascript:void(0);" class="copy" ng-click="faq.copyQuestion(question.pk);" data-clipboard-text="{% verbatim %}{{question.fields.answer | htmlSanitize}}{% endverbatim %}"><i class="material-icons">content_copy</i> Kopiëren</a>
+                    <p class="latest-update">
+                      <a href="javascript:void(0);" ng-click="faq.seeQuestionInfo(question, $index);" ng-if="question.fields.info" class="info">
+                        <i class="material-icons">info</i>
+                      </a>
+                      <a href="javascript:void(0);" ng-if="question.fields.info == null || question.fields.info == ''" class="info disabled" ng-disabled>
+                        <i class="material-icons">info</i>
+                      </a>
+                        <small>Laatst gewijzigd: {% verbatim %}{{question.fields.modified | date:'dd-MM-yyyy'}}{% endverbatim %} om {% verbatim %}{{question.fields.modified | date:'HH:mm'}}{% endverbatim %}</small>
+                    </p>
+                  </div>
+                  <div class="question" ng-if="faq.questions.length === 0">
+                    <p class="ask">Er zijn geen vragen</p>               
+                  </div>
+                </form>
+              </div>
+              <!-- ADD OR EDIT QUESTION -->
+              <div class="col-xs-12 col-lg-3">
+                {% if user.is_staff %}
+                <div class="col-xs-12">
+                  <button class="btn btn-primary" ng-click="faq.showAddEditModal();faq.viewLoader();">Voeg vraag toe</button>
+                </div>
+                <hr>
+                {% endif %}
+                 <div class="col-xs-12 mt-3 info" ng-if="faq.eventInfo.length">
+                  <a href="javascript:void(0);" class="btn btn-primary" ng-click="faq.showEventInfoModal();faq.viewLoader();">Informatie</a>
+                </div>
+                <div class="col-xs-12 mt-3 info" ng-if="faq.weeklyUpdate.length">
+                  <a href="javascript:void(0);" class="btn btn-primary" ng-click="faq.showWeeklyUpdateModal();faq.viewLoader();">Wekelijkse update</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-9 col-lg-9" ng-show="!faq.show && !faq.readedWeeklyUpdate">
+            <div>
+              <a href="javascript:void(0);" class="btn btn-primary" ng-click="faq.selectAllVenuesAndEvents();faq.setReadedWeeklyUpdate();">Klaar!</a>
+              <hr>
+            </div>
+            <div ng-repeat="weeklyUpdate in faq.weeklyUpdate">
+              <h2 class="title"><span ng-bind-html="weeklyUpdate.fields.client" class="light"></span> | <span ng-bind-html="weeklyUpdate.fields.title"></span></h2>
+              <p ng-bind-html="weeklyUpdate.fields.content"></p>
+              <hr>
+            </div>
+            <div>
+              <a href="javascript:void(0);" class="btn btn-primary" ng-click="faq.selectAllVenuesAndEvents();faq.readedWeeklyUpdate();">Klaar!</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="loader" ng-if="faq.loader">
+        <svg class="loader-element" width="65px" height="65px" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+          <circle class="loader-element-circle" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle>
+        </svg>
+      </div>
+      <div id="notification" class="message d-block success" ng-if="faq.showMessage" ng-bind="faq.message"></div>
+      <!-- ADD EDIT MODAL -->
+      <div class="modal modal-default" ng-show="faq.addEditModal">
+        <h2 class="title" ng-if="faq.add">Voeg vraag toe</h2>
+        <h2 class="title" ng-if="faq.edit">Bewerk vraag</h2>
+        <form name="addEdit" novalidate ng-submit="faq.sendQuestion($event);">
+          <div class="form-group">
+            <input type="text" class="form-control" id="addEditQuestion" placeholder="Vraag.." name="question" ng-model="faq.addEdit.question" ng-change="faq.watchAddEditForm();" required="true">
+          </div>
+          <div class="form-group">
+            <div text-angular class="form-control" id="addEditAnswer" rows="3" placeholder="Antwoord.." name="answer" ng-model="faq.addEdit.answer" ng-change="faq.watchAddEditForm();" required="true"></div>
+          </div>
+          <div class="form-group">
+            <select name="category" id="addEditCategory" ng-model="faq.addEdit.category" ng-options="category for category in faq.standardCategories" class="form-control form-control-sm" required="true">
+            </select>
+          </div>
+          <div class="form-group">
+            <select name="event" id="addEditEvent" ng-options="event for event in faq.standardVenuesEvents" ng-model="faq.addEdit.event" class="form-control form-control-sm" required="true">
+            </select>
+          </div>
+          <button class="btn btn-primary" ng-click="faq.viewLoader();" ng-if="faq.add" ng-disabled="addEdit.$invalid">Voeg toe</button>
+          <button class="btn btn-primary" ng-click="faq.viewLoader();" ng-if="faq.edit" ng-disabled="addEdit.$invalid">Bewaar</button>
+          <!-- IF role admin or super user show buttons -->
+          <button class="btn btn-dark ml-1" ng-if="faq.edit" ng-click="faq.archiveQuestion();">Archiveer</button>
+          <button class="btn btn-danger ml-1" ng-if="faq.edit" ng-click="faq.deleteQuestion();">Verwijder</button>
+          <!-- End IF -->
+          <a class="btn btn-secondary ml-1" ng-if="faq.edit" ng-click="faq.resetQuestion();">Annuleer</a>
+        </form>
+        <div class="modal-close" ng-click="faq.closeAddEditModal();">
+          <i class="material-icons">close</i>
+        </div>
+      </div>
+      <!-- MODAL GENERAL INFO -->
+      <div class="modal" ng-show="faq.showEventInfo" ng-if="faq.eventInfo.length">
+        <div ng-repeat="info in faq.eventInfo">
+          <h2 class="title">{% verbatim %}{{info.fields.event}}{% endverbatim %}</h2>
+          <p>{% verbatim %}{{info.fields.event_notes}}{% endverbatim %}</p>
+          <div class="modal-close" ng-click="faq.closeEventInfoModal();">
+            <i class="material-icons">close</i>
+          </div>
+        </div>
+      </div>
+      <!-- MODAL WEEKLY UPDATES -->
+      <div class="modal modal-default" ng-show="faq.showWeeklyUpdate" ng-if="faq.weeklyUpdate.length">
+          <div ng-repeat="weeklyUpdate in faq.weeklyUpdate">
+            <h2 class="title"><span ng-bind-html="weeklyUpdate.fields.client" class="light"></span> | <span ng-bind-html="weeklyUpdate.fields.title"></span></h2>
+            <p ng-bind-html="weeklyUpdate.fields.content"></p>
+            <hr>
+          </div>
+          <div class="modal-close" ng-click="faq.closeWeeklyUpdateModal();">
+            <i class="material-icons">close</i>
+          </div>
+      </div>
+      <!-- MODAL INFORMATION ABOUT QUESTION -->
+      <div class="modal modal-default" ng-show="faq.questionInfoModal">
+        <h2 class="title">Informatie over deze vraag</h2>
+
+        <h3 class="subtitle">
+          Interne medewerkers informatie
+        </h3>
+        <p class="modal-internal" ng-if="faq.questionInfoModalData.fields.info" ng-bind-html="faq.questionInfoModalData.fields.info"></p>
+        <p class="modal-internal" ng-if="faq.questionInfoModalData.fields.info == null || faq.questionInfoModalData.fields.info == ''">Geen interne medewerkers informatie beschikbaar</p>
+        <h3 class="subtitle">
+          Informatie voor de klant
+        </h3>
+        <p ng-bind-html="faq.questionInfoModalData.fields.answer"></p>
+        <a href="javascript:void(0);" class="btn btn-primary copy" ng-click="faq.copyQuestion(faq.questionInfoModalData.pk);" data-clipboard-text="{% verbatim %}{{faq.questionInfoModalData.fields.answer | htmlSanitize}}{% endverbatim %}">Kopieër antwoord</a>
+        <p class="modal-editinfo">
+          <small>
+            <span>Laatst gewijzigd:</span> <span> {% verbatim %}{{faq.questionInfoModalData.fields.modified | date:'dd-MM-yyyy'}}{% endverbatim %} om {% verbatim %}{{faq.questionInfoModalData.fields.modified | date:' HH:mm'}}{% endverbatim %}</span><span> door: {% verbatim %}{{faq.questionInfoModalData.fields.user_created[0]}}{% endverbatim %}</span>
+          </small>
+        </p>
+        <div class="modal-close" ng-click="faq.closeQuestionInfoModal();">
+          <i class="material-icons">close</i>
+        </div>
+      </div>
+      <!-- END MODAL INFORMATION ABOUT QUESTION -->
+    </main>
+{% endblock %}

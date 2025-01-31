@@ -1,0 +1,32 @@
+/**
+ * Modules
+ */
+
+@import "modules/colors";
+@import "modules/borders";
+@import "modules/box-shadows";
+@import "modules/typography";
+@import "modules/mediaqueries";
+@import "modules/keyframes";
+// @import "modules/mixins";
+
+/**
+ * Partials
+ */
+@import "partials/body";
+@import "partials/header";
+@import "partials/footer";
+@import "partials/buttons";
+@import "partials/form";
+@import "partials/notifications";
+@import "partials/modals";
+@import "partials/loaders";
+@import "partials/admin-page";
+@import "partials/faq-page";
+@import "partials/login-page";
+
+/**
+ * Vendors
+ */
+
+@import "vendors/textAngular";

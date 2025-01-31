@@ -1,0 +1,170 @@
+/**
+ * Admin page
+ */
+
+#faq-admin {
+	// General adjustments
+	background-color: $body-color;
+	* {
+		font-family: $font !important;
+	}
+	
+	h1, h2, h3, h4, h5, h6 {
+		font-family: $font-google !important;
+		a {
+			font-family: $font-google !important;
+		}
+	}
+
+	a {
+		font-family: $font !important;
+		color: black;
+    	text-decoration: underline;
+	}
+
+	td, th {
+		line-height: 36px;
+	}
+
+	input[type="submit"],
+	a.addlink {
+		font-family: $font !important;
+	    background-image: none;
+		color: white !important;
+		background-color: $secondary-color !important;
+		margin-left: 5px;
+		@extend .btn;
+ 	}
+	
+	.paginator a {
+	    background: none;
+	}
+
+	.deletelink {
+		@extend .btn;
+		@extend .btn.btn-danger;
+	}
+
+ 	a.changelink,
+ 	.export_link,
+ 	.import_link,
+ 	button,
+ 	.historylink {
+ 		background-image: none;
+		color: white;
+		background-color: $secondary-color;
+		@extend .btn-secondary;
+ 	}
+	
+	#header {
+	    height: 99px;
+		padding: 10px 95px;
+		box-shadow: $box-shadow-element;
+		background-color: $primary-color;
+		color: white;
+		border-bottom: $border-light;
+
+		#branding  {
+			display: flex;
+			justify-content: flex-start;
+			align-items: end;
+			a {
+				color: $secondary-color;
+			}
+			p {
+				color: black;
+				text-transform: uppercase;
+				font-size: 12px;
+			}
+		}
+
+		.logo {
+			width: 72px;
+			height: auto;
+		}
+
+		#user-tools {
+			color: $secondary-color;
+		    font-weight: 500;
+			* {
+				color: $secondary-color;
+				&:hover {
+					text-decoration: none;
+					border-bottom: 0;
+				}
+			}
+		}
+	}
+	
+	&.dashboard #content {
+		width: auto;
+		max-width: 1080px;
+		margin: 0 auto;
+	}
+	
+	div.breadcrumbs, .module h2, .module caption, .inline-group h2 {
+		background: $secondary-color;
+		border: $border-light;
+		color: $primary-color;
+		font-family: $font !important;
+
+		a {
+			color: $primary-color;
+			font-family: $font;
+		}
+	}
+
+	div.submit-row {
+		border-radius: 0;
+		border:0;
+	    background-color: $question-background-color;
+   	 	border-bottom: 1px solid $question-border-color;
+	}
+
+	#searchbar {
+    	background: $grey-color;
+	    transition: background .66s;
+	    border: 0 !important;
+	    color: rgba(0,0,0,.54) !important;
+	    height: 35px !important;
+	    padding: 8px 8px 8px 72px;
+	    transition: color .2s;
+	    transition: width .2s;
+	    width: 30%;
+	    @media screen and (max-width: $medium) {
+    	    width: 50%;
+	    }
+	    border-radius: 2px !important;
+	    color: #212121;
+	    font: 16px/20px Roboto,sans-serif;
+	    margin: 0;
+	    max-width: 100%;
+	    outline: 0;
+	    vertical-align: middle;
+	   
+    }
+	
+	#result_list {
+		a {
+			color: black;
+		}
+	}
+
+	footer {
+		text-align: center;
+		a {			
+			display: flex;
+			align-items: center;
+			justify-content: center;
+
+			text-decoration: none;
+			text-transform: uppercase;
+			color: white;
+		}
+	}
+	
+	// Hidden elements
+	#recent-actions-module {
+		display: none;
+	}
+}

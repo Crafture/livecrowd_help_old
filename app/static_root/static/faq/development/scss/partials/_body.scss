@@ -1,0 +1,22 @@
+/**
+ * Body and Main
+ */
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body, main {
+	background-color: $body-color;
+	* {
+		font-family: $font;
+	}
+}
+
+main {
+	margin-top: 60px;
+	margin-bottom: 60px;
+	padding-bottom: 60px;
+	min-height: 700px;
+}

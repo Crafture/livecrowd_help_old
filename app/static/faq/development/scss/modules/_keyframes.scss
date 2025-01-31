@@ -1,0 +1,36 @@
+/**
+ * Keyframes
+ */
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+} 
+
+@keyframes hoverButton {
+    0% {
+		background-color: white;
+		color: black;
+    }
+    100% {
+        background-color: $grey-color;
+		color: $link-color;
+    }
+} 
+
+@keyframes hoverTab {
+    0% {
+		text-decoration: none;
+		border-bottom: 3px solid rgba(255,255,255,.1);
+        opacity: .7;
+    }
+    100% {
+        opacity: 1;
+        text-decoration: none;
+		border-bottom: 3px solid white;
+    }
+}

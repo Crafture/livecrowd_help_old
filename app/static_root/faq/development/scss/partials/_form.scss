@@ -1,0 +1,46 @@
+/**
+ * Form
+ */
+
+form, form .form-control {
+	input, 
+	textarea {
+        margin-bottom: 10px;
+        border-radius: 0 !important;
+		border-bottom: $border-light !important;
+		border-left: 0 !important;
+		border-top: 0 !important;
+		border-right: 0 !important;
+    }
+
+    input {
+    	&[type="search"] {
+		    background: #f7f7f7;
+		    transition: background .66s;
+		    border: 0 !important;
+		    color: rgba(0,0,0,.54) !important;
+		    height: 36px;
+		    padding: 8px 8px 8px 72px;
+		    transition: color .2s;
+		    transition: width .2s;
+		    width: 30%;
+		    @media screen and (max-width: $medium) {
+	    	    width: 50%;
+		    }
+		    border-radius: 2px !important;
+		    color: #212121;
+		    font: 16px/20px Roboto,sans-serif;
+		    margin: 0;
+		    max-width: 100%;
+		    outline: 0;
+		    vertical-align: middle;
+		    &:focus {
+    			transition: border-color .2s;
+	   		 	transition: width 0.4s;
+	   		 	border: 1px solid #ebebeb;
+	   		 	width: 100%;
+		    }
+		   
+    	}
+    }
+}

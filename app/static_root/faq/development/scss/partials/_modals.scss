@@ -1,0 +1,35 @@
+/**
+ * Popups/Modals
+ */
+
+.modal {
+	display: block;
+    padding: 50px;
+    position: fixed;
+    top: 20%;
+    left: 33%;
+    right: 33%;
+    bottom: 33%;
+    @media screen and (max-width: $small) {
+		left: 5%;
+		right: 5%;
+    }
+    max-width: 100%;
+    z-index: 100;
+    background: white;
+    border: $border-light;
+    box-shadow: $box-shadow-xl;		
+    &-close {
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		cursor: pointer;
+    }	
+
+    select {
+		width: 100%;
+		height: 40px;
+		border-bottom: 1px solid rgba(0,0,0,.1);
+		border-radius: 0;
+    }
+}
